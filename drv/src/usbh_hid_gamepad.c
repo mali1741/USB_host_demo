@@ -72,13 +72,17 @@ typedef struct {
 	unsigned int analog_type:2;
         unsigned int max_button_index:3;  // 0-7, must have 1 button!
         unsigned int reserved_config:8;  
-
-        // uint32_t bitpos_2msb;
-        // uint8_t analog_x;
-        // uint8_t analog_y;
-        // uint8_t dpad_bit[4];
-        // uint8_t button_bit[8];
-        // uint8_t reserved_bit[2];
+           
+        /* 
+        // IDEA, use 10 bits for location as max packet size is 128 (eg. it's 64)
+        // this would enable specifying individual U/D/L/R locations, + 2 extra 
+        uint32_t bitpos_2msb;
+        uint8_t analog_x;
+        uint8_t analog_y;
+        uint8_t dpad_bit[4];
+        uint8_t button_bit[8];
+        uint8_t reserved_bit[2];
+        */
 	uint16_t dpad_bit; // starting bit, len is taken from type
 	uint16_t analog_bit;
 
@@ -335,6 +339,7 @@ static void  GAMEPAD_Decode(uint8_t *data)
           }     
         }
 
+    // Comment this line to get accurate timing of the parser, this only lits leds:
     USR_GAMEPAD_ProcessData(&HID_GAMEPAD_Data[0]);
 
 }

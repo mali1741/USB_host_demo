@@ -147,12 +147,14 @@ int main(void)
     USBH_Process(&USB_OTG_Core_dev , &USB_Host);
     cc = DWT->CYCCNT - cc;
 
+    // discard init routines, that is first seconds 
     if (cc_cnt > 1000) {
       if (cc > cc_max) cc_max = cc;
       cc_tot = cc_tot + cc;
     }
     cc_cnt++;
 
+    // 3 ms delayish? copied from delay code in usb_bsp.c
     __IO uint32_t count = 0;
     const uint32_t utime = (168000 * 3 / 7);
     do
@@ -164,7 +166,6 @@ int main(void)
     }
     while (1);
 
-    // USB_OTG_BSP_mDelay(5);
     /*
     if (i++ == 0xC0000)
     {
