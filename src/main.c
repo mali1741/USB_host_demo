@@ -106,7 +106,14 @@ __ALIGN_BEGIN USBH_HOST                     USB_Host __ALIGN_END ;
 int main(void)
 {
   __IO uint32_t i = 0;
-  
+  __IO uint32_t cc_tot = 0;
+  __IO uint32_t cc_cnt = 0;
+  __IO uint32_t cc_max = 0;
+
+
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk ; // enable the cycle counter  
+
   /*!< At this stage the microcontroller clock setting is already configured, 
   this is done through SystemInit() function which is called from startup
   file (startup_stm32fxxx_xx.s) before to branch to application main.
@@ -135,16 +142,38 @@ int main(void)
 
   while (1)
   {
+    uint32_t cc = DWT->CYCCNT;
     /* Host Task handler */
     USBH_Process(&USB_OTG_Core_dev , &USB_Host);
-    
-    if (i++ == 0x10000)
+    cc = DWT->CYCCNT - cc;
+
+    if (cc_cnt > 1000) {
+      if (cc > cc_max) cc_max = cc;
+      cc_tot = cc_tot + cc;
+    }
+    cc_cnt++;
+
+    __IO uint32_t count = 0;
+    const uint32_t utime = (168000 * 3 / 7);
+    do
+    {
+      if ( ++count > utime )
+      {
+        break ;
+      }
+    }
+    while (1);
+
+    // USB_OTG_BSP_mDelay(5);
+    /*
+    if (i++ == 0xC0000)
     {
       //STM_EVAL_LEDToggle(LED_Red);
       //STM_EVAL_LEDToggle(LED_Green);
       //STM_EVAL_LEDToggle(LED_Orange);
       i = 0;
-    }      
+    } 
+    */     
   }
 }
 

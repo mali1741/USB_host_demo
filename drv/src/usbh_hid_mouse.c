@@ -72,7 +72,8 @@
 /** @defgroup USBH_HID_MOUSE_Private_FunctionPrototypes
   * @{
   */ 
-static void  MOUSE_Init (void);
+static int MOUSE_Detect (uint16_t, uint16_t);
+static void  MOUSE_Init (uint16_t, uint16_t);
 static void  MOUSE_Decode(uint8_t *data);
 /**
   * @}
@@ -104,6 +105,7 @@ volatile uint8_t  data_mouse_buttons = 0;
 HID_MOUSE_Data_TypeDef HID_MOUSE_Data;
 HID_cb_TypeDef HID_MOUSE_cb = 
 {
+  MOUSE_Detect,
   MOUSE_Init,
   MOUSE_Decode,
 };
@@ -116,13 +118,18 @@ HID_cb_TypeDef HID_MOUSE_cb =
   * @{
   */ 
 
+static int MOUSE_Detect (uint16_t vid,uint16_t pid)
+{
+ /* Call User Init*/
+ return 1;
+}
 /**
 * @brief  MOUSE_Init
 *         Init Mouse State.
 * @param  None
 * @retval None
 */
-static void  MOUSE_Init ( void)
+static void  MOUSE_Init (uint16_t vid, uint16_t pid)
 {
  /* Call User Init*/
  USR_MOUSE_Init();

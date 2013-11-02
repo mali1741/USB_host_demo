@@ -37,6 +37,9 @@
 /* Private variables ---------------------------------------------------------*/
 extern USB_OTG_CORE_HANDLE          USB_OTG_Core_dev;
 extern USBH_HOST                    USB_Host;
+__IO uint32_t icc_tot = 0;
+__IO uint32_t icc_cnt = 0;
+__IO uint32_t icc_max = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 extern void USB_OTG_BSP_TimerIRQ (void);
@@ -183,7 +186,12 @@ void OTG_FS_IRQHandler(void)
 void OTG_HS_IRQHandler(void)
 #endif
 {
+  uint32_t icc = DWT->CYCCNT;
   USBH_OTG_ISR_Handler(&USB_OTG_Core_dev);
+  icc = DWT->CYCCNT - icc;
+  if (icc_cnt > 5000 && icc > icc_max) icc_max = icc;
+  icc_tot = icc_tot + icc;
+  icc_cnt++;
 }
 
 /******************************************************************************/

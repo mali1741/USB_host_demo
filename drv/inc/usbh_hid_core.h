@@ -87,7 +87,8 @@ HID_CtlState;
 
 typedef struct HID_cb
 {
-  void  (*Init)   (void);             
+  int   (*Detect) (uint16_t, uint16_t);
+  void  (*Init)   (uint16_t, uint16_t);             
   void  (*Decode) (uint8_t *data);       
   
 } HID_cb_TypeDef;

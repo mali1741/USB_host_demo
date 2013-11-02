@@ -47,19 +47,13 @@ SRC  = \
 ../src/usbh_usr_lcd.c \
 ../src/stm32f4_discovery.c \
 ../drv/src/misc.c \
-../drv/src/stm32f4xx_adc.c \
-../drv/src/stm32f4xx_dac.c \
 ../drv/src/stm32f4xx_dma.c \
 ../drv/src/stm32f4xx_exti.c \
 ../drv/src/stm32f4xx_gpio.c \
-../drv/src/stm32f4xx_i2c.c \
 ../drv/src/stm32f4xx_rcc.c \
 ../drv/src/stm32f4xx_rng.c \
-../drv/src/stm32f4xx_rtc.c \
-../drv/src/stm32f4xx_spi.c \
 ../drv/src/stm32f4xx_syscfg.c \
 ../drv/src/stm32f4xx_tim.c \
-../drv/src/stm32f4xx_usart.c \
 ../src/stm32fxxx_it.c \
 ../cmsis/system_stm32f4xx.c \
 ../drv/src/usb_core.c \
@@ -70,6 +64,7 @@ SRC  = \
 ../drv/src/usbh_hid_core.c \
 ../drv/src/usbh_hid_keybd.c \
 ../drv/src/usbh_hid_mouse.c \
+../drv/src/usbh_hid_gamepad.c \
 ../drv/src/usbh_ioreq.c \
 ../drv/src/usbh_stdreq.c 
 
@@ -89,8 +84,8 @@ ULIBDIR =
 ULIBS = 
 
 # Define optimisation level here
-OPT = -O2
-#OPT = -O2 -falign-functions=16 -fno-inline -fomit-frame-pointer
+# OPT = -g
+OPT = -O2 -falign-functions=16 -fno-inline -fomit-frame-pointer
 
 #
 # End of user defines
@@ -104,7 +99,7 @@ TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc -std=gnu99
 CP   = $(TRGT)objcopy
 AS   = $(TRGT)gcc -x assembler-with-cpp
-BIN  = $(CP) -O ihex 
+BIN  = $(CP) -O binary
 SZ   = $(TRGT)size
 
 MCU  = cortex-m4
@@ -160,7 +155,7 @@ CPFLAGS += -MD -MP -MF .dep/$(@F).d
 # makefile rules
 #--------------------------------------------------------------------------------------------------------------
 
-all: $(OBJS) $(FULL_PRJ).elf $(FULL_PRJ).hex size
+all: $(OBJS) $(FULL_PRJ).elf $(FULL_PRJ).bin size
 
 
 %.o : %.c
@@ -174,7 +169,7 @@ all: $(OBJS) $(FULL_PRJ).elf $(FULL_PRJ).hex size
 	@echo '-----------LINKING-------------- '
 	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@ 
   
-%hex: %elf
+%bin: %elf
 	$(BIN) $< $@
 
 size : $(FULL_PRJ).elf
@@ -189,7 +184,7 @@ clean:
 	rm -f $(OBJS)
 	rm -f $(FULL_PRJ).elf
 	rm -f $(FULL_PRJ).map
-#	rm -f $(FULL_PRJ).hex
+#	rm -f $(FULL_PRJ).bin
 	rm -f $(SRC:.c=.c.bak)
 	rm -f $(SRC:.c=.lst)
 	rm -f $(ASRC:.S=.S.bak)

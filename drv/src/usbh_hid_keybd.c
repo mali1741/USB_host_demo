@@ -74,7 +74,8 @@
 /** @defgroup USBH_HID_KEYBD_Private_FunctionPrototypes
 * @{
 */ 
-static void  KEYBRD_Init (void);
+static int  KEYBRD_Detect (uint16_t,uint16_t);
+static void  KEYBRD_Init (uint16_t,uint16_t);
 static void  KEYBRD_Decode(uint8_t *data);
 
 /**
@@ -98,6 +99,7 @@ static void  KEYBRD_Decode(uint8_t *data);
 */
 HID_cb_TypeDef HID_KEYBRD_cb= 
 {
+  KEYBRD_Detect,
   KEYBRD_Init,
   KEYBRD_Decode
 };
@@ -214,7 +216,10 @@ static  const  int8_t  HID_KEYBRD_ShiftKey[] = {
 /** @defgroup USBH_HID_KEYBD_Private_Functions
 * @{
 */ 
-
+static int  KEYBRD_Detect (uint16_t vid, uint16_t pid)
+{
+  return 1;
+}
 
 /**
 * @brief  KEYBRD_Init.
@@ -222,7 +227,7 @@ static  const  int8_t  HID_KEYBRD_ShiftKey[] = {
 * @param  None
 * @retval None
 */
-static void  KEYBRD_Init (void)
+static void  KEYBRD_Init (uint16_t vid, uint16_t pid)
 {
   /* Call User Init*/
   USR_KEYBRD_Init();

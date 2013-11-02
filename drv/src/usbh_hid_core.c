@@ -41,6 +41,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_hid_core.h"
+#include "usbh_hid_gamepad.h"
 #include "usbh_hid_mouse.h"
 #include "usbh_hid_keybd.h"
 
@@ -191,17 +192,21 @@ static USBH_Status USBH_HID_InterfaceInit ( USB_OTG_CORE_HANDLE *pdev,
   USBH_Status status = USBH_BUSY ;
   HID_Machine.state = HID_ERROR;
   
-  
-  if(pphost->device_prop.Itf_Desc[0].bInterfaceSubClass  == HID_BOOT_CODE)
-  {
+
+  if (HID_GAMEPAD_cb.Detect(pphost->device_prop.Dev_Desc.idVendor, pphost->device_prop.Dev_Desc.idProduct) || (pphost->device_prop.Itf_Desc[0].bInterfaceSubClass  == HID_BOOT_CODE)) 
+  { 
     /*Decode Bootclass Protocl: Mouse or Keyboard*/
     if(pphost->device_prop.Itf_Desc[0].bInterfaceProtocol == HID_KEYBRD_BOOT_CODE)
     {
       HID_Machine.cb = &HID_KEYBRD_cb;
     }
-    else if(pphost->device_prop.Itf_Desc[0].bInterfaceProtocol  == HID_MOUSE_BOOT_CODE)		  
+    else if(pphost->device_prop.Itf_Desc[0].bInterfaceProtocol  == HID_MOUSE_BOOT_CODE)
     {
       HID_Machine.cb = &HID_MOUSE_cb;
+    } 
+    else
+    {
+      HID_Machine.cb = &HID_GAMEPAD_cb;
     }
     
     HID_Machine.state     = HID_IDLE;
@@ -267,7 +272,7 @@ static USBH_Status USBH_HID_InterfaceInit ( USB_OTG_CORE_HANDLE *pdev,
   {
     pphost->usr_cb->DeviceNotSupported();   
   }
-  
+
   return status;
   
 }
@@ -397,7 +402,7 @@ static USBH_Status USBH_HID_Handle(USB_OTG_CORE_HANDLE *pdev ,
   {
     
   case HID_IDLE:
-    HID_Machine.cb->Init();
+    HID_Machine.cb->Init(pphost->device_prop.Dev_Desc.idVendor,pphost->device_prop.Dev_Desc.idProduct);
     HID_Machine.state = HID_SYNC;
     
   case HID_SYNC:
