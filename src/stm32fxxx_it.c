@@ -35,7 +35,8 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern USB_OTG_CORE_HANDLE          USB_OTG_Core_dev;
+extern USB_OTG_CORE_HANDLE          USB_OTG_Core;
+extern USB_OTG_CORE_HANDLE          USB_OTG_FS_Core;
 extern USBH_HOST                    USB_Host;
 __IO uint32_t icc_tot = 0;
 __IO uint32_t icc_cnt = 0;
@@ -172,6 +173,24 @@ void TIM2_IRQHandler(void)
   USB_OTG_BSP_TimerIRQ();
 }
 
+/**
+  * @brief  OTG_FS_IRQHandler
+  *          This function handles USB-On-The-Go FS global interrupt request.
+  *          requests.
+  * @param  None
+  * @retval None
+  */
+#ifdef USE_USB_OTG_FS  
+void OTG_FS_IRQHandler(void)
+{
+  uint32_t icc = DWT->CYCCNT;
+  USBH_OTG_ISR_Handler(&USB_OTG_FS_Core);
+  icc = DWT->CYCCNT - icc;
+  if (icc_cnt > 5000 && icc > icc_max) icc_max = icc;
+  icc_tot = icc_tot + icc;
+  icc_cnt++;
+}
+#endif
 
 /**
   * @brief  OTG_FS_IRQHandler
@@ -180,19 +199,12 @@ void TIM2_IRQHandler(void)
   * @param  None
   * @retval None
   */
-#ifdef USE_USB_OTG_FS
-void OTG_FS_IRQHandler(void)
-#else
+#ifdef USE_USB_OTG_HS  
 void OTG_HS_IRQHandler(void)
-#endif
 {
-  uint32_t icc = DWT->CYCCNT;
-  USBH_OTG_ISR_Handler(&USB_OTG_Core_dev);
-  icc = DWT->CYCCNT - icc;
-  if (icc_cnt > 5000 && icc > icc_max) icc_max = icc;
-  icc_tot = icc_tot + icc;
-  icc_cnt++;
+  USBH_OTG_ISR_Handler(&USB_OTG_Core);
 }
+#endif
 
 /******************************************************************************/
 /*                 STM32Fxxx Peripherals Interrupt Handlers                   */

@@ -136,8 +136,8 @@ static const USB_Gamepad_descriptor device_table[] = {
   */ 
 static inline uint32_t extract(uint8_t *,uint16_t,uint8_t);
 static int   GAMEPAD_Detect(uint16_t,uint16_t);
-static void  GAMEPAD_Init (uint16_t,uint16_t);
-static void  GAMEPAD_Decode(uint8_t *data);
+static void  GAMEPAD_Init (uint8_t, uint16_t,uint16_t);
+static void  GAMEPAD_Decode(uint8_t, uint8_t *data);
 /**
   * @}
   */ 
@@ -209,10 +209,10 @@ static int GAMEPAD_Detect (uint16_t vid, uint16_t pid)
 * @param  None
 * @retval None
 */
-static void  GAMEPAD_Init (uint16_t vid, uint16_t pid)
+static void  GAMEPAD_Init (uint8_t coreID, uint16_t vid, uint16_t pid)
 {
  /* Call User Init*/
- gamepad_descriptor[0] = GAMEPAD_FindDesc(vid,pid);
+ gamepad_descriptor[coreID] = GAMEPAD_FindDesc(vid,pid);
 
  USR_GAMEPAD_Init();
 }
@@ -232,9 +232,9 @@ static inline uint32_t extract(uint8_t *data, uint16_t bitref, uint8_t nbits)
 * @param  data : Pointer to Mouse HID data buffer
 * @retval None
 */
-static void  GAMEPAD_Decode(uint8_t *data)
+static void  GAMEPAD_Decode(uint8_t coreID, uint8_t *data)
 {
-        int device = 0;
+        uint8_t device = coreID; 
 	// const data conversion from 0-270 degrees + -1 to x/y coordinates, -1 -> 7
 	// diagonals are sqrt(2)/2
         const int8_t button_translate[8] = {gamepad_B,gamepad_Y,gamepad_select,gamepad_start,gamepad_A,gamepad_X,gamepad_L,gamepad_R};
@@ -242,7 +242,7 @@ static void  GAMEPAD_Decode(uint8_t *data)
 	const int8_t dig_to_analog[16][2] = {{0,0},{127,0},{-127,0},{0,0},{0,127},{89,89},{-89,89},{0,0},{0,-127},{89,-89},{-89,-89},{0,0},{0,0},{0,0},{0,0},{0,0}};
 	uint8_t val;
 
-	const USB_Gamepad_descriptor *gp = gamepad_descriptor[device]; // shortcut
+	const USB_Gamepad_descriptor *gp = gamepad_descriptor[coreID]; // shortcut
 
         if (!gp->vid) return; // not configured
 
@@ -340,7 +340,7 @@ static void  GAMEPAD_Decode(uint8_t *data)
         }
 
     // Comment this line to get accurate timing of the parser, this only lits leds:
-    USR_GAMEPAD_ProcessData(&HID_GAMEPAD_Data[0]);
+    USR_GAMEPAD_ProcessData(&HID_GAMEPAD_Data[device]);
 
 }
 /**

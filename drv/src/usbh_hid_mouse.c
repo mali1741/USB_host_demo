@@ -73,8 +73,8 @@
   * @{
   */ 
 static int MOUSE_Detect (uint16_t, uint16_t);
-static void  MOUSE_Init (uint16_t, uint16_t);
-static void  MOUSE_Decode(uint8_t *data);
+static void  MOUSE_Init (uint8_t, uint16_t, uint16_t);
+static void  MOUSE_Decode(uint8_t, uint8_t *data);
 /**
   * @}
   */ 
@@ -129,7 +129,7 @@ static int MOUSE_Detect (uint16_t vid,uint16_t pid)
 * @param  None
 * @retval None
 */
-static void  MOUSE_Init (uint16_t vid, uint16_t pid)
+static void  MOUSE_Init (uint8_t coreID, uint16_t vid, uint16_t pid)
 {
  /* Call User Init*/
  USR_MOUSE_Init();
@@ -141,7 +141,7 @@ static void  MOUSE_Init (uint16_t vid, uint16_t pid)
 * @param  data : Pointer to Mouse HID data buffer
 * @retval None
 */
-static void  MOUSE_Decode(uint8_t *data)
+static void  MOUSE_Decode(uint8_t coreID, uint8_t *data)
 {
   HID_MOUSE_Data.button = data[0];
 

@@ -75,8 +75,8 @@
 * @{
 */ 
 static int  KEYBRD_Detect (uint16_t,uint16_t);
-static void  KEYBRD_Init (uint16_t,uint16_t);
-static void  KEYBRD_Decode(uint8_t *data);
+static void  KEYBRD_Init (uint8_t,uint16_t,uint16_t);
+static void  KEYBRD_Decode(uint8_t,uint8_t *data);
 
 /**
 * @}
@@ -227,7 +227,7 @@ static int  KEYBRD_Detect (uint16_t vid, uint16_t pid)
 * @param  None
 * @retval None
 */
-static void  KEYBRD_Init (uint16_t vid, uint16_t pid)
+static void  KEYBRD_Init (uint8_t coreID, uint16_t vid, uint16_t pid)
 {
   /* Call User Init*/
   USR_KEYBRD_Init();
@@ -240,7 +240,7 @@ static void  KEYBRD_Init (uint16_t vid, uint16_t pid)
 * @retval None
 */
 
-static void KEYBRD_Decode(uint8_t *pbuf)
+static void KEYBRD_Decode(uint8_t coreID, uint8_t *pbuf)
 {
   static  uint8_t   shift;
   static  uint8_t   keys[KBR_MAX_NBR_PRESSED];

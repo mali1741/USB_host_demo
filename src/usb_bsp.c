@@ -118,7 +118,8 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
   RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE) ; 
- #else // USE_USB_OTG_HS 
+ #endif
+ #ifdef USE_USB_OTG_HS  // USE_USB_OTG_HS 
 
   #ifdef USE_ULPI_PHY // ULPI
   RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | 
@@ -245,24 +246,33 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
   */
 void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
 {
-
-  NVIC_InitTypeDef NVIC_InitStructure;
-  /* Enable USB Interrupt */
+  NVIC_InitTypeDef NVIC_InitStructure; 
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
+#ifdef USE_USB_OTG_FS
   NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
+  NVIC_Init(&NVIC_InitStructure);  
+#endif
 
+#ifdef USE_USB_OTG_HS
+  NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);    
+#endif
   /* Enable the Overcurrent Interrupt */
+  /*
   NVIC_InitStructure.NVIC_IRQChannel = HOST_OVRCURR_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
+  
   NVIC_Init(&NVIC_InitStructure);
+  */
 }
 
 /**

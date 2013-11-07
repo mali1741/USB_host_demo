@@ -72,7 +72,7 @@
     #pragma data_alignment=4   
   #endif
 #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
-__ALIGN_BEGIN USB_OTG_CORE_HANDLE           USB_OTG_Core_dev __ALIGN_END ;
+__ALIGN_BEGIN USB_OTG_CORE_HANDLE           USB_OTG_Core __ALIGN_END ;
 
 #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
   #if defined ( __ICCARM__ ) /*!< IAR Compiler */
@@ -80,6 +80,20 @@ __ALIGN_BEGIN USB_OTG_CORE_HANDLE           USB_OTG_Core_dev __ALIGN_END ;
   #endif
 #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
 __ALIGN_BEGIN USBH_HOST                     USB_Host __ALIGN_END ;
+
+#ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
+  #if defined ( __ICCARM__ ) /*!< IAR Compiler */
+    #pragma data_alignment=4   
+  #endif
+#endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
+__ALIGN_BEGIN USB_OTG_CORE_HANDLE           USB_OTG_FS_Core __ALIGN_END ;
+
+#ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
+  #if defined ( __ICCARM__ ) /*!< IAR Compiler */
+    #pragma data_alignment=4   
+  #endif
+#endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
+__ALIGN_BEGIN USBH_HOST                     USB_FS_Host __ALIGN_END ;
 /**
 * @}
 */ 
@@ -122,16 +136,23 @@ int main(void)
   */  
 
   /* Init Host Library */
-  USBH_Init(&USB_OTG_Core_dev, 
-#ifdef USE_USB_OTG_FS
-            USB_OTG_FS_CORE_ID,
-#else
+#ifdef USE_USB_OTG_HS
+  USBH_Init(&USB_OTG_Core, 
             USB_OTG_HS_CORE_ID,
-#endif
             &USB_Host,
             &HID_cb, 
             &USR_Callbacks);
-  
+#endif
+
+  /* Init FS Core */
+#ifdef USE_USB_OTG_FS
+  USBH_Init(&USB_OTG_FS_Core, 
+            USB_OTG_FS_CORE_ID,
+            &USB_FS_Host,
+            &HID_cb, 
+            &USR_Callbacks);
+#endif
+
   STM_EVAL_LEDOff(LED_Blue); // added by "STM32"
   STM_EVAL_LEDOff(LED_Red);  // added by "STM32"
   STM_EVAL_LEDOff(LED_Green);  // added by "STM32"
@@ -144,7 +165,12 @@ int main(void)
   {
     uint32_t cc = DWT->CYCCNT;
     /* Host Task handler */
-    USBH_Process(&USB_OTG_Core_dev , &USB_Host);
+    #ifdef USE_USB_OTG_HS
+    USBH_Process(&USB_OTG_Core, &USB_Host);
+    #endif
+    #ifdef USE_USB_OTG_FS
+    USBH_Process(&USB_OTG_FS_Core, &USB_FS_Host);
+    #endif
     cc = DWT->CYCCNT - cc;
 
     // discard init routines, that is first seconds 
@@ -155,6 +181,7 @@ int main(void)
     cc_cnt++;
 
     // 3 ms delayish? copied from delay code in usb_bsp.c
+    /*
     __IO uint32_t count = 0;
     const uint32_t utime = (168000 * 3 / 7);
     do
@@ -165,7 +192,7 @@ int main(void)
       }
     }
     while (1);
-
+    */
     /*
     if (i++ == 0xC0000)
     {
