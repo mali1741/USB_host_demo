@@ -85,7 +85,8 @@ ULIBS =
 
 # Define optimisation level here
 # OPT = -g
-OPT = -O2 -falign-functions=16 -fno-inline -fomit-frame-pointer
+OPT = -O3 -falign-functions=16 -fomit-frame-pointer
+# - fno-inline
 
 #
 # End of user defines
@@ -110,7 +111,7 @@ MCU  = cortex-m4
 FPU = -mfloat-abi=hard -mfpu=fpv4-sp-d16 -D__FPU_USED=1
 
 # List all default C defines here, like -D_DEBUG=1
-DDEFS = -D__arm__ -D__ASSEMBLY__ -DUSE_STDPERIPH_DRIVER -DSTM32F4XX -DHSE_VALUE=8000000 -D__FPU_PRESENT=1  -D__FPU_USED=1 -DSTM32F407VG -DUSE_USB_OTG_HS -DUSE_EMBEDDED_PHY -DUSE_USB_OTG_FS
+DDEFS = -D__arm__ -D__ASSEMBLY__ -DUSE_STDPERIPH_DRIVER -DSTM32F4XX -DHSE_VALUE=8000000 -D__FPU_PRESENT=1  -D__FPU_USED=1 -DSTM32F407VG -DUSE_USB_OTG_HS -DUSE_EMBEDDED_PHY 
 
 # List all default ASM defines here, like -D_DEBUG=1
 DADEFS = -D__arm__ -D__ASSEMBLY__ -DUSE_STDPERIPH_DRIVER -DSTM32F4XX -DHSE_VALUE=8000000 -D__FPU_PRESENT=1  -D__FPU_USED=1 -DSTM32F407VG 

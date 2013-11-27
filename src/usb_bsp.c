@@ -31,7 +31,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
 
-#define USE_ACCURATE_TIME
+// #define USE_ACCURATE_TIME
 #define TIM_MSEC_DELAY                     0x01
 #define TIM_USEC_DELAY                     0x02
 #define HOST_OVRCURR_PORT                  GPIOD
@@ -235,7 +235,9 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
  #endif //USB_OTG_HS
 
   /* Intialize Timer for delay function */
+#ifdef USE_ACCURATE_TIME
   USB_OTG_BSP_TimeInit(); 
+#endif
 }
 
 /**
@@ -338,6 +340,7 @@ void  USB_OTG_BSP_ConfigVBUS(USB_OTG_CORE_HANDLE *pdev)
 
 }
 
+#ifdef USE_ACCURATE_TIME
 /**
   * @brief  USB_OTG_BSP_TimeInit
   *         Initializes delay unit using Timer2
@@ -346,7 +349,6 @@ void  USB_OTG_BSP_ConfigVBUS(USB_OTG_CORE_HANDLE *pdev)
   */
 static void USB_OTG_BSP_TimeInit (void)
 {
-#ifdef USE_ACCURATE_TIME
   NVIC_InitTypeDef NVIC_InitStructure;
 
   /* Set the Vector Table base address at 0x08000000 */
@@ -364,8 +366,8 @@ static void USB_OTG_BSP_TimeInit (void)
   NVIC_Init(&NVIC_InitStructure);
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-#endif
 }
+#endif
 
 /**
   * @brief  USB_OTG_BSP_uDelay

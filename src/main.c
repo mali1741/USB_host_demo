@@ -181,7 +181,7 @@ int main(void)
     cc_cnt++;
 
     // 3 ms delayish? copied from delay code in usb_bsp.c
-    /*
+   
     __IO uint32_t count = 0;
     const uint32_t utime = (168000 * 3 / 7);
     do
@@ -192,7 +192,7 @@ int main(void)
       }
     }
     while (1);
-    */
+    
     /*
     if (i++ == 0xC0000)
     {
